@@ -1,1 +1,117 @@
-SharkGame.WorldModifiers={planetaryIncome:{name:"Planetary Income",apply:function(e,r,o){SharkGame.World.worldResources[r].income=e*o}},planetaryIncomeMultiplier:{name:"Planetary Income Multiplier",apply:function(e,r,o){SharkGame.World.worldResources[r].incomeMultiplier=e*o}},planetaryIncomeReciprocalMultiplier:{name:"Planetary Income Reciprocal Multiplier",apply:function(e,r,o){SharkGame.World.worldResources[r].incomeMultiplier=1/(e*o)}},planetaryResourceBoost:{name:"Planetary Boost",apply:function(e,r,o){SharkGame.World.worldResources[r].boostMultiplier=e*o}},planetaryResourceReciprocalBoost:{name:"Planetary Reciprocal Boost",apply:function(e,r,o){SharkGame.World.worldResources[r].boostMultiplier=e*o}},planetaryStartingResources:{name:"Planetary Starting Resources",apply:function(e,r,o){var a=e*o;SharkGame.Resources.getTotalResource(r)<a&&SharkGame.Resources.changeResource(r,a)}}},SharkGame.World={worldType:"start",worldResources:{},planetLevel:1,init:function(){SharkGame.World.resetWorldProperties()},apply:function(){var e=SharkGame.World;e.applyWorldProperties(e.planetLevel),e.applyGateCosts(e.planetLevel)},resetWorldProperties:function(){var e=SharkGame.World.worldResources,r=SharkGame.ResourceTable;$.each(r,(function(r,o){e[r]={},e[r].exists=!0,e[r].income=0,e[r].incomeMultiplier=1,e[r].boostMultiplier=1,e[r].artifactMultiplier=1}))},applyWorldProperties:function(e){var r=SharkGame.World,o=r.worldResources,a=SharkGame.WorldTypes[r.worldType],t=r.getTerraformMultiplier(),l=Math.max(Math.floor(e*t),1);$.each(a.absentResources,(function(e,r){o[r].exists=!1})),_.each(a.modifiers,(function(e){if(SharkGame.Resources.isCategory(e.resource)){var r=SharkGame.Resources.getResourcesInCategory(e.resource);_.each(r,(function(r){SharkGame.WorldModifiers[e.modifier].apply(l,r,e.amount)}))}else SharkGame.WorldModifiers[e.modifier].apply(l,e.resource,e.amount)}))},applyGateCosts:function(e){var r=SharkGame.World,o=(SharkGame.Gate,SharkGame.WorldTypes[r.worldType]),a=r.getGateCostMultiplier();SharkGame.Gate.createSlots(o.gateCosts,r.planetLevel,a)},getWorldEntryMessage:function(){var e=SharkGame.World;return SharkGame.WorldTypes[e.worldType].entry},doesResourceExist:function(e){return SharkGame.World.worldResources[e].exists},forceExistence:function(e){SharkGame.World.worldResources[e].exists=!0},getWorldIncomeMultiplier:function(e){return SharkGame.World.worldResources[e].incomeMultiplier},getWorldBoostMultiplier:function(e){return SharkGame.World.worldResources[e].boostMultiplier},getArtifactMultiplier:function(e){return SharkGame.World.worldResources[e].artifactMultiplier},getTerraformMultiplier:function(){var e=SharkGame.Artifacts.planetTerraformer.level;return e>0?Math.pow(.9,e):1},getGateCostMultiplier:function(){var e=SharkGame.Artifacts.gateCostReducer.level;return e>0?Math.pow(.9,e):1}};
+"use strict";
+SharkGame.World = {
+    _worldType: "start",
+    get worldType() {
+        return this._worldType;
+    },
+    set worldType(worldType) {
+        const body = document.querySelector("body");
+        body.classList.remove(this._worldType);
+        body.classList.add(worldType);
+        this._worldType = worldType;
+    },
+    worldResources: new Map(),
+    worldRestrictedCombinations: new Map(),
+
+    init() {
+        world.resetWorldProperties();
+        world.worldType = "start";
+    },
+
+    setup() {
+        res.setResource("world", 1);
+        res.setTotalResource("world", 1);
+        world.apply();
+        res.setResource("specialResourceOne", 1);
+        res.setTotalResource("specialResourceOne", 1);
+        res.setResource("specialResourceTwo", 1);
+        res.setTotalResource("specialResourceTwo", 1);
+    },
+
+    apply() {
+        world.applyWorldProperties();
+        world.applyGateCosts();
+    },
+
+    resetWorldProperties() {
+        const worldResources = world.worldResources;
+        world.worldRestrictedCombinations.clear();
+
+        // set up defaults
+        SharkGame.ResourceMap.forEach((_resourceData, resourceName) => {
+            worldResources.set(resourceName, {});
+            worldResources.get(resourceName).exists = true;
+        });
+    },
+
+    applyWorldProperties() {
+        const worldResources = world.worldResources;
+        const worldInfo = SharkGame.WorldTypes[world.worldType];
+
+        // enable resources allowed on the planet
+        if (worldInfo.includedResources) {
+            SharkGame.ResourceMap.forEach((_resourceData, resourceName) => {
+                worldResources.get(resourceName).exists = false;
+            });
+            _.each(worldInfo.includedResources, (group) => {
+                if (_.has(SharkGame.InternalCategories, group)) {
+                    _.each(SharkGame.InternalCategories[group].resources, (resource) => {
+                        worldResources.get(resource).exists = true;
+                    });
+                } else {
+                    worldResources.get(group).exists = true;
+                }
+            });
+        }
+
+        // disable resources not allowed on planet
+        _.each(worldInfo.absentResources, (absentResource) => {
+            worldResources.get(absentResource).exists = false;
+        });
+
+        // apply world modifiers
+        _.each(worldInfo.modifiers, (modifierData) => {
+            res.applyModifier(modifierData.modifier, modifierData.resource, modifierData.amount);
+        });
+        res.buildIncomeNetwork();
+    },
+
+    applyGateCosts() {
+        const worldInfo = SharkGame.WorldTypes[world.worldType];
+
+        // get multiplier
+        const gateCostMultiplier = world.getGateCostMultiplier();
+
+        SharkGame.Gate.createSlots(worldInfo.gateRequirements, gateCostMultiplier);
+    },
+
+    getWorldEntryMessage() {
+        return SharkGame.WorldTypes[world.worldType].entry;
+    },
+
+    doesResourceExist(resourceName) {
+        return world.worldResources.get(resourceName).exists;
+    },
+
+    forceExistence(resourceName) {
+        world.worldResources.get(resourceName).exists = true;
+    },
+
+    getGateCostMultiplier() {
+        return 1;
+    },
+
+    isScoutingMission() {
+        if (SharkGame.flags.scouting) {
+            return true;
+        }
+
+        // if this is NOT marked as a scouting mission, make sure that's accurate
+        // (but if it IS marked as a scouting mission, we don't care if that's accurate, just blindly accept)
+        if (!gateway.completedWorlds.includes(world.worldType)) {
+            // this should be a scouting mission
+            SharkGame.flags.scouting = true;
+        }
+        return SharkGame.flags.scouting;
+    },
+};
