@@ -8,7 +8,7 @@ All games will be hosted here due to the amount of files. It overloads GitHub so
 
 If you want to check out the site, head to [https://3kh0.github.io](3kh0.github.io)
 
-The main repo can be found at [https://github.com/3kh0/3kh0.github.io](https://github.com/3kh0/3kh0.github.io])
+The main repo can be found at [https://github.com/3kh0/3kh0.github.io](https://github.com/3kh0/3kh0.github.io)
 
 ## Usage (using this for your own site)
 
