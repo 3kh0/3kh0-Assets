@@ -1,3 +1,5 @@
+# Original: https://github.com/111116/webosu
+
 # ¡nso
 
 A browser rhythm game where players click circles following rhythm of the music.
