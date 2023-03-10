@@ -4,7 +4,7 @@
 
 All games will be hosted here due to the amount of files. It overloads GitHub so hard, to GitHub, I am so sorry! For the main site, we using [githack.com](https://raw.githack.com/) as a CDN to load the games, so no more 15 minute deploy times and size limits.
 
-**Skidding this gets you no gain, so fuck off.**
+**Skidding this gets you no gain, so {    } off.**
 
 If you want to check out the site, head to [https://3kh0.github.io](3kh0.github.io)
 
