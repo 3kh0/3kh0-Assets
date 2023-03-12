@@ -38,6 +38,12 @@ Create a pull request here!
 ***Contributing a change to the UI***
 Create a pull request on the [main github repo](https://github.com/3kh0/3kh0.github.io)!
 
+Join these epic people who have helped make the best unblocked games website!
+
+<a href="https://github.com/3kh0/3kh0-Assets/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=3kh0/3kh0-Assets" />
+</a>
+
 ## Codebase
 
 All folders on this repo are games **except** the `js` and `.github` folder.
