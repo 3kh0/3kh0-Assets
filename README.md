@@ -1,2 +1,7 @@
 # 3kh0-Assets
-Game assets for 3kh0.github.io, this repo is synced with many CDNs to make them unblocked, if you fork this just for skidding, shame on you. Scroll down to the README for more info on how to use this for your site
+
+Due to requests by GitHub about the contents of this repository causing strain on servers, this content has been moved to GitLab for more reliable hosting. You can access the GitLab repository using the link below.
+
+https://gitlab.com/3kh0/3kh0-assets
+
+If you would like to get in touch with me, please contact me via email at `echo-the-coder@tuta.io`
